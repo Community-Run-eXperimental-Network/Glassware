@@ -27,12 +27,11 @@ string[] fetchNetworks()
 		// It's only a network if the filename ends in `.json`
 		if(endsWith(filename, ".json"))
 		{
-			writeln("Found network: "~filename);
-			networks ~= filename;
+			// writeln("Found network: "~filename);
+			networks ~= split(filename, ".")[0];
 		}
 		
 	}
-
 
 	return networks;
 }
@@ -56,7 +55,7 @@ void main(string[] args)
 	writeln(fetchNetwork("bruh").toPrettyString());
 
 
-	fetchNetworks();
+	writeln("Found networks: "~to!(string)(fetchNetworks()));
 
 	// Start the web server
 	// runApplication();
