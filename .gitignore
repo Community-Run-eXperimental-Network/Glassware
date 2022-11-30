@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/entitydb-api
+entitydb-api.so
+entitydb-api.dylib
+entitydb-api.dll
+entitydb-api.a
+entitydb-api.lib
+entitydb-api-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

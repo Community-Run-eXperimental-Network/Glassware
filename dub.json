@@ -1,0 +1,12 @@
+{
+	"authors": [
+		"Tristan B. V. Kildaire"
+	],
+	"copyright": "Copyright © 2022, Tristan B. V. Kildaire",
+	"dependencies": {
+		"vibe-d": "~>0.9.5"
+	},
+	"description": "AN API server for querying EntityDB information",
+	"license": "LGPL-3.0",
+	"name": "entitydb-api"
+}
