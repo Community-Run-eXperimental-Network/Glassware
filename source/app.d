@@ -50,25 +50,26 @@ JSONValue fetchNetwork(string filename)
 public final class Person
 {
 	private JSONValue personBlock;
-	private string name, email, gpgKey;
+	protected string name, email, gpgKey;
 
-	this(JSONValue personBlock)
-	{
-		this.personBlock = personBlock;
-		initData(personBlock);
-	}
+	private this() {}
 
-	private void initData(JSONValue personBlock)
+	public static Person getPerson(JSONValue personBlock)
 	{
 		try
 		{
-			name = personBlock["name"].str();
-			email = personBlock["email"].str();
-			gpgKey = personBlock["gpg"].str();
+			Person person = new Person();
+
+			person.name = personBlock["name"].str();
+			person.email = personBlock["email"].str();
+			person.gpgKey = personBlock["gpg"].str();
+
+			return person;
 		}
 		catch(JSONException e)
 		{
-			// TODO: Handle error
+			// If fails we return null
+			return null;
 		}
 	}
 }
@@ -130,7 +131,7 @@ public final class Network
 
 		try
 		{
-			person = new Person(networkData["person"]);
+			person = Person.getPerson(networkData["person"]);
 		}
 		catch(JSONException e)
 		{
