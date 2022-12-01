@@ -54,6 +54,16 @@ public final class Person
 
 	private this() {}
 
+	/** 
+	 * Provided the person block as JSON this will attempt
+	 * to parse it, if so returning a <code>Person</code> object. If a
+	 * failure occurs during parsing then <code>null</code>
+	 * is returned
+	 *
+	 * Params:
+	 *   personBlock = The JSON-encoded person block
+	 * Returns: The Person object representing such information
+	 */
 	public static Person getPerson(JSONValue personBlock)
 	{
 		try
@@ -68,7 +78,6 @@ public final class Person
 		}
 		catch(JSONException e)
 		{
-			// If fails we return null
 			return null;
 		}
 	}
@@ -127,19 +136,7 @@ public final class Network
 	 */
 	public Person getPerson()
 	{
-		Person person = null;
-
-		try
-		{
-			person = Person.getPerson(networkData["person"]);
-		}
-		catch(JSONException e)
-		{
-			writeln("Failed to fetch person details for network '"~networkName~"'");
-		}
-
-
-		return person;
+		return Person.getPerson(networkData["person"]);
 	}
 }
 
