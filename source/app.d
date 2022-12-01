@@ -47,6 +47,32 @@ JSONValue fetchNetwork(string filename)
 	return jsonParsed;
 }
 
+public final class Person
+{
+	private JSONValue personBlock;
+	private string name, email, gpgKey;
+
+	this(JSONValue personBlock)
+	{
+		this.personBlock = personBlock;
+		initData(personBlock);
+	}
+
+	private void initData(JSONValue personBlock)
+	{
+		try
+		{
+			name = personBlock["name"].str();
+			email = personBlock["email"].str();
+			gpgKey = personBlock["gpg"].str();
+		}
+		catch(JSONException e)
+		{
+			// TODO: Handle error
+		}
+	}
+}
+
 public final class Network
 {
 	private string networkName;
@@ -65,30 +91,58 @@ public final class Network
 		try
 		{
 			JSONValue jsonParsed;
-			jsonParsed = parseJSON(get(edbBaseURL~"contents")); // TODO: Handle CurlException
+			jsonParsed = parseJSON(get(edbBaseURL~"contents/"~networkName~".json")); // TODO: Handle CurlException
 
 			
 
 			// Extract the data (decode base64-encoded data)
-			string base64Data = networkData["content"].str();
+			string base64Data = jsonParsed["content"].str();
 
 			string contents = cast(string)Base64.decode(base64Data);
 			JSONValue networkContents = parseJSON(contents);
 
-			networkData = jsonParsed;
+			writeln(networkContents.toPrettyString());
+
+			networkData = networkContents;
 		}
 		catch(JSONException e)
 		{
 			// TODO: Handle this
+			writeln(e);
 		}
 		catch(CurlException e)
 		{
 			// TODO: Handle this
+			writeln(e);
 		}
+	}
+
+	/** 
+	 * Returns the owner/contact details for this network
+	 *
+	 * Returns: The <code>Person</code> object representing
+	 * this information, <code>null</code> if such information
+	 * does not exist
+	 */
+	public Person getPerson()
+	{
+		Person person = null;
+
+		try
+		{
+			person = new Person(networkData["person"]);
+		}
+		catch(JSONException e)
+		{
+			writeln("Failed to fetch person details for network '"~networkName~"'");
+		}
+
+
+		return person;
 	}
 }
 
-void main(string[] args)
+unittest
 {
 	writeln("Edit source/app.d to start your project.");
 
@@ -98,14 +152,24 @@ void main(string[] args)
 	// Fetch list of all networks
 	string[] networks = fetchNetworks();
 
+	import std.algorithm;
+	assert(equal(networks, ["bandura", "deavmi", "reddawn", "skiqqy", "ty3r0x"]));
+
+
 	writeln("Found networks: "~to!(string)(networks));
 
 	foreach(string network; networks)
 	{
 		Network networkFetched = new Network(network);
 		writeln(networkFetched);
+		writeln("Person info (if any): ", networkFetched.getPerson());
 	}
+}
+
+void main(string[] args)
+{
+	
 
 	// Start the web server
-	// runApplication();
+	runApplication();
 }
