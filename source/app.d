@@ -166,9 +166,40 @@ unittest
 	}
 }
 
+
+void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
+{
+	// Construct the JSON to send back
+	JSONValue networksBlock;
+	networksBlock["networks"] = parseJSON(to!(string)(fetchNetworks()));
+
+	response.writeJsonBody(networksBlock);
+}
+
+void initializeRoutes(URLRouter router)
+{
+	// TODO: Fill in routes here
+
+	router.get("/api/networks/", &getNetworks);
+}
+
 void main(string[] args)
 {
-	
+	// TODO: Add command-line handling and configurtion file parsing here
+
+	// Setup the HTTP socket
+	HTTPServerSettings httpServerSettings = new HTTPServerSettings();
+	httpServerSettings.bindAddresses = ["::"];
+	httpServerSettings.port = 8888;
+
+	// Create a new router
+	URLRouter router = new URLRouter();
+
+	// Set the router
+	initializeRoutes(router);
+
+	// Bind the HTTP server and set the router
+	listenHTTP(httpServerSettings, router);
 
 	// Start the web server
 	runApplication();
