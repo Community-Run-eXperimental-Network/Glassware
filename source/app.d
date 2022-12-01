@@ -64,11 +64,13 @@ public final class Person
 	 *   personBlock = The JSON-encoded person block
 	 * Returns: The Person object representing such information
 	 */
-	public static Person getPerson(JSONValue personBlock)
+	public static Person getPerson(JSONValue networkData)
 	{
 		try
 		{
 			Person person = new Person();
+
+			JSONValue personBlock = networkData["person"];
 
 			person.name = personBlock["name"].str();
 			person.email = personBlock["email"].str();
@@ -136,7 +138,7 @@ public final class Network
 	 */
 	public Person getPerson()
 	{
-		return Person.getPerson(networkData["person"]);
+		return Person.getPerson(networkData);
 	}
 }
 
