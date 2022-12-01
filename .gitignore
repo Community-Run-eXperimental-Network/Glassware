@@ -14,3 +14,4 @@ entitydb-api-test-*
 *.o
 *.obj
 *.lst
+glassware
