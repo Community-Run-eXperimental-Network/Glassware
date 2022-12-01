@@ -8,5 +8,5 @@
 	},
 	"description": "AN API server for querying EntityDB information",
 	"license": "AGPL-3.0",
-	"name": "entitydb-api"
+	"name": "glassware"
 }
