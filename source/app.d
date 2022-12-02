@@ -1,3 +1,5 @@
+module source.app;
+
 import std.stdio;
 
 import vibe.d;
@@ -5,6 +7,7 @@ import std.json;
 import std.string;
 import std.net.curl;
 import std.base64;
+import source.exceptions;
 
 string edbBaseURL = "https://codeberg.org/api/v1/repos/crxn/entitydb/";
 
@@ -100,12 +103,12 @@ public final class Network
 
 	private void initData(string networkName)
 	{
-		try
-		{
+			writeln("bruh1");
+
 			JSONValue jsonParsed;
 			jsonParsed = parseJSON(get(edbBaseURL~"contents/"~networkName~".json")); // TODO: Handle CurlException
 
-			
+			writeln("bruh");
 
 			// Extract the data (decode base64-encoded data)
 			string base64Data = jsonParsed["content"].str();
@@ -116,17 +119,6 @@ public final class Network
 			writeln(networkContents.toPrettyString());
 
 			networkData = networkContents;
-		}
-		catch(JSONException e)
-		{
-			// TODO: Handle this
-			writeln(e);
-		}
-		catch(CurlException e)
-		{
-			// TODO: Handle this
-			writeln(e);
-		}
 	}
 
 	/** 
@@ -139,6 +131,21 @@ public final class Network
 	public Person getPerson()
 	{
 		return Person.getPerson(networkData);
+	}
+
+	// TODO: We should be throwing our own exceptions
+	public string[] getRegisteredRoutes()
+	{
+		try
+		{
+			JSONValue routesBlock = networkData["route"];
+			
+			return routesBlock.object().keys();
+		}
+		catch(JSONException e)
+		{
+			throw new GlasswareException(GlasswareError.GETREGROUTES_PARSE_ERROR);
+		}
 	}
 }
 
@@ -193,11 +200,48 @@ void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
 	response.writeJsonBody(results);
 }
 
+void getNetwork(HTTPServerRequest request, HTTPServerResponse response)
+{
+	// Fetch the query parameters
+	auto queryDict = request.query();
+
+	// Get the network name
+	string networkName = queryDict["name"];
+
+	// Construct the results JSON
+	JSONValue results;
+	results["status"] = true;
+
+	// Attempt to get the networks
+	try
+	{
+		// Fetch the network
+		Network networkFetched = new Network(networkName);
+
+		// TODO: Implement this
+		JSONValue networksBlock;
+		networksBlock["network"] = parseJSON("todo");
+
+		results["response"] = networksBlock;
+	}
+	catch(CurlException e)
+	{
+		results["status"] = false;
+	}
+	catch(JSONException e)
+	{
+		results["status"] = false;
+	}
+
+	response.writeJsonBody(results);
+}
+
 void initializeRoutes(URLRouter router)
 {
 	// TODO: Fill in routes here
 
-	router.get("/api/networks/", &getNetworks);
+	router.get("/api/networks/list", &getNetworks);
+	router.get("/api/networks/get", &getNetwork);
 }
 
 void main(string[] args)
