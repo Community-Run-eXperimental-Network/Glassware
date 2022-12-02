@@ -169,11 +169,28 @@ unittest
 
 void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
 {
-	// Construct the JSON to send back
-	JSONValue networksBlock;
-	networksBlock["networks"] = parseJSON(to!(string)(fetchNetworks()));
+	// Construct the results JSON
+	JSONValue results;
+	results["status"] = true;
 
-	response.writeJsonBody(networksBlock);
+	// Attempt to get the networks
+	try
+	{
+		JSONValue networksBlock;
+		networksBlock["networks"] = parseJSON(to!(string)(fetchNetworks()));
+
+		results["response"] = networksBlock;
+	}
+	catch(CurlException e)
+	{
+		results["status"] = false;
+	}
+	catch(JSONException e)
+	{
+		results["status"] = false;
+	}
+
+	response.writeJsonBody(results);
 }
 
 void initializeRoutes(URLRouter router)
