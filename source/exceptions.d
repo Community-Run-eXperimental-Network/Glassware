@@ -4,7 +4,9 @@ import std.conv : to;
 
 public enum GlasswareError
 {
-    GETREGROUTES_PARSE_ERROR
+    GETREGROUTES_PARSE_ERROR,
+    NETWORK_ERROR,
+    JSON_PARSING_ERROR
 }
 
 public final class GlasswareException : Exception

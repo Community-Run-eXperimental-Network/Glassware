@@ -103,6 +103,8 @@ public final class Network
 
 	private void initData(string networkName)
 	{
+		try
+		{
 			writeln("bruh1");
 
 			JSONValue jsonParsed;
@@ -119,6 +121,16 @@ public final class Network
 			writeln(networkContents.toPrettyString());
 
 			networkData = networkContents;
+		}
+		catch(CurlException e)
+		{
+			throw new GlasswareException(GlasswareError.NETWORK_ERROR);
+		}
+		catch(JSONException e)
+		{
+			throw new GlasswareException(GlasswareError.JSON_PARSING_ERROR);
+		}
+			
 	}
 
 	/** 
@@ -144,8 +156,32 @@ public final class Network
 		}
 		catch(JSONException e)
 		{
-			throw new GlasswareException(GlasswareError.GETREGROUTES_PARSE_ERROR);
+			throw new GlasswareException(GlasswareError.JSON_PARSING_ERROR);
 		}
+	}
+
+	public JSONValue getJSON()
+	{
+		// TOOD: Implement me
+		JSONValue netInfo;
+
+		// Compute a list of registered routes
+		string[] registeredRoutes;
+		try
+		{
+			registeredRoutes = getRegisteredRoutes();
+		}
+		catch(GlasswareException e)
+		{
+			// TODO: Fill in
+		}
+
+		netInfo["routes"] = registeredRoutes;
+
+
+
+
+		return netInfo;
 	}
 }
 
@@ -200,6 +236,9 @@ void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
 	response.writeJsonBody(results);
 }
 
+// TODO: We should cache all Network objects that are made
+// Infact this can be done with making static fetchNetwork, then
+// every now and then returns a fresh objetc with a new curl request
 void getNetwork(HTTPServerRequest request, HTTPServerResponse response)
 {
 	// Fetch the query parameters
@@ -220,18 +259,34 @@ void getNetwork(HTTPServerRequest request, HTTPServerResponse response)
 
 		// TODO: Implement this
 		JSONValue networksBlock;
-		networksBlock["network"] = parseJSON("todo");
+		networksBlock["network"] = networkFetched.getJSON();
 
 		results["response"] = networksBlock;
 	}
-	catch(CurlException e)
+	catch(GlasswareException e)
 	{
-		results["status"] = false;
+		results["status"] = e.getError();
 	}
-	catch(JSONException e)
-	{
-		results["status"] = false;
-	}
+
+	response.writeJsonBody(results);
+}
+
+void listRoutes(HTTPServerRequest request, HTTPServerResponse response)
+{
+	// Fetch the query parameters
+	auto queryDict = request.query();
+
+	// Get the network name
+	string networkName = queryDict["network"];
+
+	// Construct the results JSON
+	JSONValue results;
+	results["status"] = true;
+
+
+	// TODO: Add code
+
+
 
 	response.writeJsonBody(results);
 }
@@ -242,6 +297,9 @@ void initializeRoutes(URLRouter router)
 
 	router.get("/api/networks/list", &getNetworks);
 	router.get("/api/networks/get", &getNetwork);
+
+	// `/api/routes/list?network=<name>`
+	router.get("/api/routes/list", &listRoutes);
 }
 
 void main(string[] args)
