@@ -290,7 +290,7 @@ void getNetwork(HTTPServerRequest request, HTTPServerResponse response)
 	auto queryDict = request.query();
 
 	// Get the network name
-	string networkName = queryDict["name"];
+	string networkName = queryDict["network"];
 
 	// Construct the results JSON
 	JSONValue results;
@@ -354,7 +354,10 @@ void initializeRoutes(URLRouter router)
 {
 	// TODO: Fill in routes here
 
+	// 
 	router.get("/api/networks/list", &getNetworks);
+
+	// `/api/networks/get?network=<name>`
 	router.get("/api/networks/get", &getNetwork);
 
 	// `/api/routes/list?network=<name>`
