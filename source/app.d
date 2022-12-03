@@ -19,23 +19,43 @@ string edbBaseURL = "https://codeberg.org/api/v1/repos/crxn/entitydb/";
  */
 string[] fetchNetworks()
 {
+	// Collected network information
 	string[] networks;
 
-	JSONValue jsonParsed;
-	jsonParsed = parseJSON(get(edbBaseURL~"contents"));  // TODO: Handle CurlException
-
-	foreach(JSONValue networkBlock; jsonParsed.array())
+	// Fetch the networks
+	string networkData;
+	try
 	{
-		string filename = networkBlock["name"].str();
-
-		// It's only a network if the filename ends in `.json`
-		if(endsWith(filename, ".json"))
-		{
-			// writeln("Found network: "~filename);
-			networks ~= split(filename, ".")[0];
-		}
-		
+		networkData = cast(string)get(edbBaseURL~"contents");
 	}
+	catch(CurlException e)
+	{
+		throw new GlasswareException(GlasswareError.NETWORK_ERROR);
+	}
+
+	try
+	{
+		JSONValue jsonParsed;
+		jsonParsed = parseJSON(networkData);  // TODO: Handle CurlException
+
+		foreach(JSONValue networkBlock; jsonParsed.array())
+		{
+			string filename = networkBlock["name"].str();
+
+			// It's only a network if the filename ends in `.json`
+			if(endsWith(filename, ".json"))
+			{
+				// writeln("Found network: "~filename);
+				networks ~= split(filename, ".")[0];
+			}
+			
+		}
+	}
+	catch(JSONException e)
+	{
+		throw new GlasswareException(GlasswareError.JSON_PARSING_ERROR);
+	}
+	
 
 	return networks;
 }
@@ -244,13 +264,9 @@ void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
 
 		results["response"] = networksBlock;
 	}
-	catch(CurlException e)
+	catch(GlasswareException e)
 	{
-		results["status"] = false;
-	}
-	catch(JSONException e)
-	{
-		results["status"] = false;
+		results["status"] = to!(string)(e.getError());
 	}
 
 	response.writeJsonBody(results);
