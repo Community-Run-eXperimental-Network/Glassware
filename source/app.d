@@ -125,12 +125,10 @@ public final class Network
 	{
 		try
 		{
-			writeln("bruh1");
 
 			JSONValue jsonParsed;
 			jsonParsed = parseJSON(get(edbBaseURL~"contents/"~networkName~".json")); // TODO: Handle CurlException
 
-			writeln("bruh");
 
 			// Extract the data (decode base64-encoded data)
 			string base64Data = jsonParsed["content"].str();

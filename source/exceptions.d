@@ -2,9 +2,9 @@ module source.exceptions;
 
 import std.conv : to;
 
+// NOTE: Do not change the order of these please, only append
 public enum GlasswareError
 {
-    GETREGROUTES_PARSE_ERROR,
     NETWORK_ERROR,
     JSON_PARSING_ERROR
 }
