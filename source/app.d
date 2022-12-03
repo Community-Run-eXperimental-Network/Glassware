@@ -8,6 +8,7 @@ import std.string;
 import std.net.curl;
 import std.base64;
 import source.exceptions;
+import std.algorithm.searching;
 
 string edbBaseURL = "https://codeberg.org/api/v1/repos/crxn/entitydb/";
 
@@ -178,6 +179,33 @@ public final class Network
 		}
 	}
 
+	public Route getRoute(string routeRequested)
+	{
+		Route route;
+
+		if(canFind(networkData.object().keys(), "route"))
+		{
+			try
+			{
+				// "route"
+				JSONValue routeBlock = networkData["route"];
+
+				
+				route = Route.getRoute(routeBlock, routeRequested);
+			}
+			catch(JSONException e)
+			{
+				throw new GlasswareException(GlasswareError.JSON_PARSING_ERROR);
+			}
+		}
+		else
+		{
+			throw new GlasswareException(GlasswareError.NO_ROUTES);
+		}
+
+		return route;
+	}
+
 	public JSONValue getJSON()
 	{
 		// TOOD: Implement me
@@ -237,24 +265,28 @@ public final class Route
 		this.network = network;
 	}
 
-	public static Route getRoute(Network network, string routeName)
+	public static Route getRoute(JSONValue routeBlock, string routeRequested)
 	{
 		Route route;
 
-		
+		if(canFind(routeBlock.object().keys(), routeRequested))
+		{
+			try
+			{
 
+			}
+			catch(JSONException e)
+			{
+				throw new GlasswareException(GlasswareError.JSON_PARSING_ERROR);
+			}
+		}
+		else
+		{
+			throw new GlasswareException(GlasswareError.ROUTE_NOT_FOUND);
+		}
 
 		return route;
 	}
-}
-
-JSONValue makeError(GlasswareError errorCode)
-{
-	JSONValue errorBlock;
-	errorBlock["detail"] = to!(string)(errorCode);
-	errorBlock["error"] = errorCode;
-
-	return errorBlock;
 }
 
 void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
