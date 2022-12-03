@@ -209,6 +209,26 @@ unittest
 	}
 }
 
+public final class Route
+{
+	// Network this Route belongs to
+	private Network network;
+
+	private this(Network network)
+	{
+		this.network = network;
+	}
+
+	public static Route getRoute(Network network, string routeName)
+	{
+		Route route;
+
+		
+
+
+		return route;
+	}
+}
 
 void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
 {
@@ -283,12 +303,24 @@ void listRoutes(HTTPServerRequest request, HTTPServerResponse response)
 	JSONValue results;
 	results["status"] = true;
 
+	// Fetch the network
+	Network networkFetched = new Network(networkName);
+
+	// Get the routes
+	string[] networkRoutes = networkFetched.getRegisteredRoutes();
+	results["response"] = networkRoutes;
+
 
 	// TODO: Add code
 
 
 
 	response.writeJsonBody(results);
+}
+
+void webhookHandler(HTTPServerRequest request, HTTPServerResponse response)
+{
+
 }
 
 void initializeRoutes(URLRouter router)
@@ -300,6 +332,11 @@ void initializeRoutes(URLRouter router)
 
 	// `/api/routes/list?network=<name>`
 	router.get("/api/routes/list", &listRoutes);
+
+
+
+	// Webhooks routes to alert for changes
+	router.post("/api/refresh", &webhookHandler);
 }
 
 void main(string[] args)
