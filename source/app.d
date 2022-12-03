@@ -303,17 +303,19 @@ void listRoutes(HTTPServerRequest request, HTTPServerResponse response)
 	JSONValue results;
 	results["status"] = true;
 
-	// Fetch the network
-	Network networkFetched = new Network(networkName);
+	try
+	{
+		// Fetch the network
+		Network networkFetched = new Network(networkName);
 
-	// Get the routes
-	string[] networkRoutes = networkFetched.getRegisteredRoutes();
-	results["response"] = networkRoutes;
-
-
-	// TODO: Add code
-
-
+		// Get the routes
+		string[] networkRoutes = networkFetched.getRegisteredRoutes();
+		results["response"] = networkRoutes;
+	}
+	catch(GlasswareException e)
+	{
+		results["status"] = e.getError();
+	}
 
 	response.writeJsonBody(results);
 }
