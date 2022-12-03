@@ -253,8 +253,8 @@ public final class Route
 JSONValue makeError(GlasswareError errorCode)
 {
 	JSONValue errorBlock;
-	errorBlock["error"] = to!(string)(errorCode);
-	errorBlock["code"] = errorCode;
+	errorBlock["detail"] = to!(string)(errorCode);
+	errorBlock["error"] = errorCode;
 
 	return errorBlock;
 }
