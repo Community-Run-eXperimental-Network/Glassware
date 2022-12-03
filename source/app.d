@@ -250,6 +250,15 @@ public final class Route
 	}
 }
 
+JSONValue makeError(GlasswareError errorCode)
+{
+	JSONValue errorBlock;
+	errorBlock["error"] = to!(string)(errorCode);
+	errorBlock["code"] = errorCode;
+
+	return errorBlock;
+}
+
 void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
 {
 	// Construct the results JSON
@@ -266,7 +275,7 @@ void getNetworks(HTTPServerRequest request, HTTPServerResponse response)
 	}
 	catch(GlasswareException e)
 	{
-		results["status"] = to!(string)(e.getError());
+		results["status"] = makeError(e.getError());
 	}
 
 	response.writeJsonBody(results);
@@ -301,7 +310,7 @@ void getNetwork(HTTPServerRequest request, HTTPServerResponse response)
 	}
 	catch(GlasswareException e)
 	{
-		results["status"] = to!(string)(e.getError());
+		results["status"] = makeError(e.getError());
 	}
 
 	response.writeJsonBody(results);
@@ -330,7 +339,7 @@ void listRoutes(HTTPServerRequest request, HTTPServerResponse response)
 	}
 	catch(GlasswareException e)
 	{
-		results["status"] = to!(string)(e.getError());
+		results["status"] = makeError(e.getError());
 	}
 
 	response.writeJsonBody(results);
