@@ -285,7 +285,7 @@ void getNetwork(HTTPServerRequest request, HTTPServerResponse response)
 	}
 	catch(GlasswareException e)
 	{
-		results["status"] = e.getError();
+		results["status"] = to!(string)(e.getError());
 	}
 
 	response.writeJsonBody(results);
